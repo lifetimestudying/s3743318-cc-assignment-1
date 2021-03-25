@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from forms import LoginForm, RegistrationForm
-from datastore import validateUser, storeUser
+from datastore import validateUser, storeUser, checkUser
 
 app = Flask(__name__)
 
@@ -31,13 +31,16 @@ def register():
 
     # check if user input are valid
     if registrationForm.validate_on_submit():
-        # store user into datastore
-        storeUser(registrationForm.userID.data, 
-            registrationForm.username.data, registrationForm.password.data)
-        flash(f'Register successfully.', 'success')
-        return redirect(url_for('login')) 
-    else:
-        flash(f'Something went wrong. Please try again later.', 'danger')
+        # check if userID been registered already
+        if checkUser(registrationForm.userID.data) == True:
+            # store user into datastore
+            storeUser(registrationForm.userID.data, 
+                registrationForm.username.data, registrationForm.password.data)
+            flash(f'Register successfully.', 'success')
+            return redirect(url_for('login')) 
+        else:
+            flash(f'UserID already been registered.', 'danger')
+    
 
     return render_template('register.html', title='Register', form=registrationForm)
 
