@@ -11,11 +11,12 @@
     {% endif %}
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
     <!-- navigation  -->
-    <nav class="navbar navbar-expand-sm navbar-light bg-light px-5">
-        <a class="navbar-brand" href="/">My Web Application</a>
+    <nav class="navbar navbar-expand-sm navbar-bg px-5">
+        <a class="navbar-brand navbar-text" href="/">My Web Application</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#user-link" aria-controls="user-link" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -23,10 +24,10 @@
         <div class="collapse navbar-collapse" id="user-link">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/login">Login</a>
+                    <a class="nav-link navbar-text" href="/login">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/register">Register</a>
+                    <a class="nav-link navbar-text" href="/register">Register</a>
                 </li>
             </ul>
         </div>
@@ -46,7 +47,7 @@
     </div> 
     
     <!-- content -->
-    <div class="container-fluid mt-4">
+    <div class="container-fluid">
         {% block content %} {% endblock content%}
     </div>
     
