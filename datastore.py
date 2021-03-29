@@ -58,5 +58,5 @@ def uploadImage(imageFileName, imageFile):
     # fileupload = "%s/%s" % ('uploads', filename)
     blob = bucket.blob(imageFileName)
 
-    with open(imageFileName, 'rb') as image:
+    with open(imageFile, 'rb') as image:
         blob.upload_from_file(imageFile) 

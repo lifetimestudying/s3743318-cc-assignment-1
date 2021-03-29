@@ -1,0 +1,30 @@
+*, html {
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-bg {
+    background-color: #121324;
+}
+
+.navbar-text{
+    color: #ffffff;
+    transition: .5s;
+}
+
+.navbar-text:hover {
+    color: #FF0368;
+    
+}
+
+.forum-page {
+    height: 90vh;
+    margin: 0;
+    padding: 0;
+}
+
+.user-area {
+    height: 100vh;
+    width: 100%;
+    background-color:aqua;
+}

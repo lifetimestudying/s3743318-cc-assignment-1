@@ -50,7 +50,7 @@ def register():
         imageFile = registrationForm.uploadImage.data
         # filename = secure_filename(imageFile.filename)
         # imageFile.save(os.path.join(upload_dir, imageFile)) 
-        imageFileName = "%s/%s" % ('', imageFile)
+        imageFileName = "%s/%s" % (basePath, imageFile)
 
         # check if userID been registered already
         if checkUserID(registrationForm.userID.data) == True and checkUsername(registrationForm.username.data) == True:
