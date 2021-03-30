@@ -1,12 +1,14 @@
-import os
-from flask import Flask, render_template, url_for, flash, redirect
+import os 
+from flask import Flask, render_template, url_for, flash, redirect, request
 from forms import LoginForm, RegistrationForm, MessageForm
-from datastore import validateUser, storeUser, checkUserID, checkUsername, uploadImage
+from werkzeug.utils import secure_filename
+from data import validateUser, storeUser, checkUserID, checkUsername, uploadImage
 
 basePath = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '5be9e2c5b3c87e157014923db49916d0'
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.jpeg']
 app.config['UPLOADED_IMAGES_DEST'] = os.path.join(basePath, 'uploads')
 
 @app.route("/")
@@ -39,24 +41,20 @@ def register():
     # check if user input are valid
     if registrationForm.validate_on_submit():
 
-        # set upload file path
-        upload_dir = os.path.join(
-            os.path.dirname(app.instance_path), 'uploads'
-        )
-
         userID = registrationForm.userID.data
         username = registrationForm.username.data
         password = registrationForm.password.data
         imageFile = registrationForm.uploadImage.data
-        # filename = secure_filename(imageFile.filename)
-        # imageFile.save(os.path.join(upload_dir, imageFile)) 
-        imageFileName = "%s/%s" % (basePath, imageFile)
+        
+        # setup gcloud storage dir and upload file name
+        imageFileName = "%s/%s" % ('uploads', imageFile.filename)
 
         # check if userID been registered already
         if checkUserID(registrationForm.userID.data) == True and checkUsername(registrationForm.username.data) == True:
             # store user into datastore
-            # storeUser(userID, username, password, imageFileName, imageFile)
-            uploadImage(imageFileName, imageFile) 
+            storeUser(userID, username, password, imageFileName, imageFile)
+            ## Test
+            # uploadImage(imageFileName, imageFile) 
             flash(f'Register successfully.', 'success')
             return redirect(url_for('login')) 
         else:

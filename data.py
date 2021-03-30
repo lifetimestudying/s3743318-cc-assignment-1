@@ -55,8 +55,6 @@ def checkUsername(username):
 
 # upload image into storage
 def uploadImage(imageFileName, imageFile):
-    # fileupload = "%s/%s" % ('uploads', filename)
     blob = bucket.blob(imageFileName)
+    blob.upload_from_file(imageFile)
 
-    with open(imageFile, 'rb') as image:
-        blob.upload_from_file(imageFile) 
