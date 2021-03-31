@@ -1,20 +1,99 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="forum-page row">
-        <div class="user-area col-3 justify-content-center h-100 w-100">
-            <div class="user-area-content text-center mt-5">
-               <div class="user-image">
-                   <img src="" alt="">
-               </div> 
-               <div class="user-name text-center">
-                    <a class="" href="">Username</a>
-               </div>
+    <div class="forum-page row w-100 justify-content-center">
+        <!-- user area -->
+        <div class="user-area text-center col-3 align-items-center justify-content-center">
+            <div class="mt-5">
+                <div class="image-container mx-auto justify-content-center mb-4">
+                    <img class="rounded-circle justify-content-center align-self-center" src="{{ userImage }}">
+                </div>
+                <div class="justify-content-center mb-5">
+                    <a class="daccount-heaing badge badge-info" href="">{{ user }}</a>
+                </div>
             </div>
         </div>
-        <div class="forum-area ml-5">
-            <div class="title">
+        <!-- end user area -->
+
+        <!-- forum area -->
+        <div class="forum-area ml-5 col-8">
+            <div class="forum-title">
                 <h1 class="display-4">FORUMS</h1>
             </div>
+
+            <!-- forum area - user input -->
+            <div class="forum-form">
+                <form action="" method="POST" enctype=multipart/form-data>
+                    {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                        <h6 class="forum-intro pb-2">Got some news today?</h6>
+                        <div class="form-group">
+                            {% if form.subject.errors %}
+                                {{ form.subject(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.subject.errors %}   
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.subject(class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {% if form.messageArea.errors %}
+                                {{ form.messageArea(rows="3", class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.messageArea.errors %}   
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.messageArea(rows="3", class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                        <div class="input-group">
+                            {% if form.uploadImage.errors %}
+                                {{ form.uploadImage(class="is-invalid custom-file-input", id="inputGroupFile01") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.uploadImage.errors %}    
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.uploadImage(class="custom-file-input", id="inputGroupFile01") }}
+                            {% endif %}
+                            {{ form.uploadImage.label(class="custom-file-label", id="inputGroupFile01")}}
+                        </div> 
+                    </fieldset>
+                    <div class="form-group">
+                        {{ form.submitField(class="btn btn-custom") }}
+                    </div>
+                </form>
+            </div>
+            <!-- end of forum area - user input -->
+
+            <!-- forum area - forum list -->
+            
+            <div class="forum-list overflow-auto mt-5">
+                {% for i in range(6) %}
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <p class="text-justify">
+                            Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium
+                                purus sit amet fermentum. Donec sed odio operae, eu vulputate 
+                                felis rhoncus. Praeterea iter est quasdam res quas ex communi. 
+                                At nos hinc posthac, sitientis piros Afros. Petierunt uti sibi 
+                                concilium totius Galliae in diem certam indicere. Cras mattis 
+                                iudicium purus sit amet fermentum.
+                        </p>
+                        <span class="font-weight-bold">2 days ago</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- end of forum area - forum list -->
         </div>
+        <!-- end of forum area -->
+
     </div>
 {% endblock content %}

@@ -1,5 +1,5 @@
-from google.cloud import datastore, storage
-
+from google.cloud import datastore, storage, vision
+import os
 # datastore client
 datastore_client = datastore.Client()
 
@@ -7,9 +7,11 @@ datastore_client = datastore.Client()
 storage_client = storage.Client()
 # identify bucket from storage client
 bucket = storage_client.get_bucket('s3743318-assignmnet-1.appspot.com')
+# vision client
+vision_client = vision.ImageAnnotatorClient()
 
 # add user into datastore
-def storeUser(userID, username, password, imageFileName, imageFile):
+def storeUser(userID, username, password, imageFile):
     entity = datastore.Entity(key=datastore_client.key('userID',userID)) 
     entity.update({
         'username': username,
@@ -17,7 +19,7 @@ def storeUser(userID, username, password, imageFileName, imageFile):
     })
 
     datastore_client.put(entity) 
-    uploadImage(imageFileName, imageFile)
+    uploadImage(userID, imageFile)
 
 # check if userID and password matches data in datastore
 def validateUser(userID, password):
@@ -54,7 +56,24 @@ def checkUsername(username):
     return False
 
 # upload image into storage
-def uploadImage(imageFileName, imageFile):
-    blob = bucket.blob(imageFileName)
-    blob.upload_from_file(imageFile)
+def uploadImage(userID, imageFile):
 
+    # inital gcloud storage dir and upload file name
+    imageFileName = "%s/%s" % ('uploads', userID + 'fileImage.jpg')
+    # setup dir and object on storage bucket
+    blob = bucket.blob(imageFileName)
+    # upload image to bucket 
+    blob.upload_from_file(imageFile)
+    # make object public accessable
+    blob.make_public()
+
+# retrieve image file of user
+def getImage(userID):
+
+    # initial public access url
+    auth_url = f"https://storage.googleapis.com/s3743318-assignmnet-1.appspot.com/uploads/{userID}fileImage.jpg"
+    
+    return auth_url 
+    
+#
+    

@@ -1,19 +1,18 @@
-import os 
-from flask import Flask, render_template, url_for, flash, redirect, request
+from flask import Flask, render_template, url_for, flash, redirect, request, session, send_file
 from forms import LoginForm, RegistrationForm, MessageForm
 from werkzeug.utils import secure_filename
-from data import validateUser, storeUser, checkUserID, checkUsername, uploadImage
-
-basePath = os.path.abspath(os.path.dirname(__file__))
+from data import validateUser, storeUser, checkUserID, checkUsername, getImage
+import io
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '5be9e2c5b3c87e157014923db49916d0'
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.jpeg']
-app.config['UPLOADED_IMAGES_DEST'] = os.path.join(basePath, 'uploads')
+
 
 @app.route("/")
 def home():
     return render_template('index.html')
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -24,15 +23,19 @@ def login():
 
         userID = loginForm.userID.data
         password = loginForm.password.data
-
+        
         # check if user detail matches database
         if validateUser(userID, password):
+            # initial user session
+            session["user"] = userID
+
             flash(f'You have successfully logged in.', 'success')
-            return redirect(url_for('home')) 
+            return redirect(url_for('forum')) 
         else:
             flash(f'Login ID or password is invalid.', 'danger')
 
     return render_template('login.html', title='Login', form=loginForm)
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -46,22 +49,18 @@ def register():
         password = registrationForm.password.data
         imageFile = registrationForm.uploadImage.data
         
-        # setup gcloud storage dir and upload file name
-        imageFileName = "%s/%s" % ('uploads', imageFile.filename)
-
         # check if userID been registered already
-        if checkUserID(registrationForm.userID.data) == True and checkUsername(registrationForm.username.data) == True:
+        if checkUserID(userID) == True and checkUsername(username) == True:
             # store user into datastore
-            storeUser(userID, username, password, imageFileName, imageFile)
-            ## Test
-            # uploadImage(imageFileName, imageFile) 
+            storeUser(userID, username, password, imageFile)
+ 
             flash(f'Register successfully.', 'success')
             return redirect(url_for('login')) 
         else:
-            if checkUserID(registrationForm.userID.data) == False:
+            if checkUserID(userID) == False:
                 flash(f'UserID already been registered.', 'danger')
 
-            if checkUsername(registrationForm.username.data) == False:
+            if checkUsername(username) == False:
                 flash(f'Username already been registered.', 'danger')
 
     return render_template('register.html', title='Register', form=registrationForm)
@@ -69,11 +68,34 @@ def register():
 
 @app.route("/forum", methods=["GET", "POST"])
 def forum():
-    messageForm = MessageForm()
+    # check if user logged in
+    if "user" in session:
+        # identify current session user
+        user = session["user"]
+        # retrieve user image by current session user
+        userImage = getImage(user)
+        messageForm = MessageForm()
+        message = messageForm.messageArea.data
+        image = messageForm.uploadImage.data
 
-    return render_template('forum.html', title="Forum", form=messageForm)
+        return render_template('forum.html', title='forum', 
+            form=messageForm, user=user, userImage=userImage)
+    else:
+        flash(f"You haven't logged in yet.", 'danger')
+        return redirect(url_for('login'))
 
 
+@app.route("/account", methods=["POST", "GET"])
+def account():
+    if "user" in session:
+        # identify current session user
+        user = session["user"]
+        
+        return render_template('account.html', title="Account", form=accountForm, user=user)
+    else:
+        flash(f"You haven't logged in yet.", 'danger')
+        return redirect(url_for('login'))
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
