@@ -8,7 +8,7 @@
                     <img class="rounded-circle justify-content-center align-self-center" src="{{ userImage }}">
                 </div>
                 <div class="justify-content-center mb-5">
-                    <a class="daccount-heaing badge badge-info" href="">{{ user }}</a>
+                    <a class="daccount-heaing badge badge-info" href="{{ url_for('account') }}">{{ user }}</a>
                 </div>
             </div>
         </div>
@@ -40,14 +40,14 @@
                         </div>
                         <div class="form-group">
                             {% if form.messageArea.errors %}
-                                {{ form.messageArea(rows="3", class="form-control form-control-lg is-invalid") }}
+                                {{ form.messageArea(rows="3", class="form-control is-invalid") }}
                                 <div class="invalid-feedback">
                                     {% for error in form.messageArea.errors %}   
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.messageArea(rows="3", class="form-control form-control-lg") }}
+                                {{ form.messageArea(rows="3", class="form-control") }}
                             {% endif %}
                         </div>
                         <div class="input-group">
@@ -72,20 +72,21 @@
             <!-- end of forum area - user input -->
 
             <!-- forum area - forum list -->
-            
             <div class="forum-list overflow-auto mt-5">
-                {% for i in range(6) %}
+                {% for post in userPost %}
                 <div class="card mb-2">
                     <div class="card-body">
-                        <p class="text-justify">
-                            Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium
-                                purus sit amet fermentum. Donec sed odio operae, eu vulputate 
-                                felis rhoncus. Praeterea iter est quasdam res quas ex communi. 
-                                At nos hinc posthac, sitientis piros Afros. Petierunt uti sibi 
-                                concilium totius Galliae in diem certam indicere. Cras mattis 
-                                iudicium purus sit amet fermentum.
-                        </p>
-                        <span class="font-weight-bold">2 days ago</span>
+                        <div class="media">
+                            <div class="user-post-image mr-3">
+                                <img class="rounded-circle" src="{{ userImage }}">
+                            </div>
+                            <div class="media-body">
+                                <h6>{{ post.subject }}</h6>
+                                <p class="text-justify">{{ post.postMessage }}</p>
+                                <span class="font-weight-bold">{{ post.datetime }}</span>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
                 {% endfor %}

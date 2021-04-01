@@ -23,12 +23,24 @@
 
         <div class="collapse navbar-collapse" id="user-link">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link navbar-text" href="/login">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link navbar-text" href="/register">Register</a>
-                </li>
+                {% if 'user' in session %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('account') }}" class="nav-link navbar-text">Welcome, {{ user }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('forum') }}" class="nav-link navbar-text">Forum</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('logout') }}" class="nav-link navbar-text">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link navbar-text" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link navbar-text" href="{{ url_for('register') }}">Register</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </nav>

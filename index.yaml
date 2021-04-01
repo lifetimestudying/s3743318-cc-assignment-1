@@ -1,0 +1,7 @@
+indexes:
+
+- kind: post
+  properties:
+  - name: userID
+  - name: datetime
+    direction: desc

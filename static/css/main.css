@@ -85,3 +85,13 @@ body {
     height: 55%;
     overflow-y: scroll;
 }
+
+.user-post-image {
+    height: 40px;
+    width: 40px;
+}
+
+.user-post-image img {
+    height: 100%;
+    width: 100%; 
+}

@@ -24,10 +24,10 @@ class MessageForm(FlaskForm):
     submitField = SubmitField('Post')
 
 class AccountForm(FlaskForm):
-    # userID = StringField('Login ID', validators=[DataRequired(), Length(min=9, max=9)])
-    # username = StringField('Username', validators=[DataRequired()]) 
     oldpassword = PasswordField('Old Password', validators=[DataRequired()]) 
     newpassword = PasswordField('New Password', validators=[DataRequired(), Length(min=6, max=6)]) 
     confirmpassword = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password', message='password must match')])
-    uploadImage = FileField('Choose file')
-    submitField = SubmitField('Register')
+    changesubject = StringField("Subject", validators=[DataRequired()])    
+    changemessage = StringField("Message", validators=[DataRequired()])
+    changeimage = FileField("Choose File")
+    submitField = SubmitField('Change')
