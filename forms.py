@@ -1,6 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField
-from wtforms.widgets import TextArea
+from wtforms import * 
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 class LoginForm(FlaskForm):
@@ -19,15 +18,19 @@ class RegistrationForm(FlaskForm):
 
 class MessageForm(FlaskForm):
     subject = StringField('Subject', validators=[DataRequired()], render_kw={"placeholder": "Subject"})
-    messageArea = StringField('Message', validators=[DataRequired()], widget=TextArea())
+    messageArea = TextAreaField('Message', validators=[DataRequired()])
     uploadImage = FileField('Choose file')
-    submitField = SubmitField('Post')
+    messageSubmit = SubmitField('Post')
 
 class AccountForm(FlaskForm):
     oldpassword = PasswordField('Old Password', validators=[DataRequired()]) 
     newpassword = PasswordField('New Password', validators=[DataRequired(), Length(min=6, max=6)]) 
-    confirmpassword = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password', message='password must match')])
-    changesubject = StringField("Subject", validators=[DataRequired()])    
-    changemessage = StringField("Message", validators=[DataRequired()])
-    changeimage = FileField("Choose File")
-    submitField = SubmitField('Change')
+    confirmpassword = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('newpassword', message='password must match')])
+    accountSubmit = SubmitField('Change')
+
+class UpdatePostForm(FlaskForm):
+    subject = StringField('Subject', validators=[DataRequired()], render_kw={"placeholder": "Subject"})
+    messageArea = TextAreaField('Message', validators=[DataRequired()])
+    uploadImage = FileField('Choose file')
+    olddatetime = StringField('Old datetime')
+    messageSubmit = SubmitField('Post')

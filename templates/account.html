@@ -1,64 +1,57 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="container">
-        <h1 class="display3 border-bottom pb-2">User Account</h1>
+    <div class="user-page h-100">
+        <h1 class="display-3 pb-2">User Account</h1>
         <div class="row">
             <!-- password edit area -->
             <div class="password-area col-4">
+                <h4 class="border-bottom pb-2">Change Password</h4>
                 <form method="POST" action="" enctype=multipart/form-data>
-                    {{ form.hidden_tag() }}
+                    {{ accountform.hidden_tag() }}
                     <fieldset class="form-group">
                         <div class="form-group">
-                            <label class="form-control-label">UserID:</label>
-                            <input class="form-control form-control-lg" placeholder="{{ user }}" disabled/>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-control-label">User Name:</label>
-                            <input class="form-control form-control-lg" placeholder="{{ username }}" disabled/>
-                        </div>
-                        <div class="form-group">
-                            {{ form.oldpassword.label(class="form-control-label") }}
-                            {% if form.oldpassword.errors %}
-                                {{ form.oldpassword(class="form-control form-control-lg is-invalid") }}
+                            {{ accountform.oldpassword.label(class="form-control-label") }}
+                            {% if accountform.oldpassword.errors %}
+                                {{ accountform.oldpassword(class="form-control form-control-lg is-invalid") }}
                                 <div class="invalid-feedback">
-                                    {% for error in form.oldpassword.errors %}    
+                                    {% for error in accountform.oldpassword.errors %}    
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.oldpassword(class="form-control form-control-lg") }}
+                                {{ accountform.oldpassword(class="form-control form-control-lg") }}
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            {{ form.newpassword.label(class="form-control-label") }}
-                            {% if form.newpassword.errors %}
-                                {{ form.newpassword(class="form-control form-control-lg is-invalid") }}
+                            {{ accountform.newpassword.label(class="form-control-label") }}
+                            {% if accountform.newpassword.errors %}
+                                {{ accountform.newpassword(class="form-control form-control-lg is-invalid") }}
                                 <div class="invalid-feedback">
-                                    {% for error in form.newpassword.errors %}    
+                                    {% for error in accountform.newpassword.errors %}    
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.newpassword(class="form-control form-control-lg") }}
+                                {{ accountform.newpassword(class="form-control form-control-lg") }}
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            {{ form.confirmpassword.label(class="form-control-label") }}
-                            {% if form.confirmpassword.errors %}
-                                {{ form.confirmpassword(class="form-control form-control-lg is-invalid") }}
+                            {{ accountform.confirmpassword.label(class="form-control-label") }}
+                            {% if accountform.confirmpassword.errors %}
+                                {{ accountform.confirmpassword(class="form-control form-control-lg is-invalid") }}
                                 <div class="invalid-feedback">
-                                    {% for error in form.confirmpassword.errors %}    
+                                    {% for error in accountform.confirmpassword.errors %}    
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.confirmpassword(class="form-control form-control-lg") }}
+                                {{ accountform.confirmpassword(class="form-control form-control-lg") }}
                             {% endif %}
                         </div>
                         
                     </fieldset>
                     <div class="form-group">
-                        {{ form.submitField(class="btn btn-outline-primary") }}
+                        {{ accountform.accountSubmit(class="btn btn-outline-primary") }}
                     </div>
                 </form>
             </div>
@@ -67,26 +60,96 @@
 
             <!-- Post Edit Area -->
             <div class="post-area col-8">
-                <form method="POST" enctype=multipart/form-data>
-                    {{ form.hidden_tag() }}
-                    <fieldset class="form-group">
-                        <div class="form-group">
-                            {{ form.changesubject.label(class="form-control-label") }}
-                            {% if form.changesubject.errors %}
-                                {{ form.changesubject(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.changesubject.errors %}    
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
+                <h4 class="border-bottom pb-2">Modify Post</h4>
+                <!-- display post -->
+                <div class="forum-list overflow-auto mt-4">
+                    {% for post in userPost %}
+                    <div class="card mb-2">
+                        <div class="card-body row ml-2">
+                            <div class="media">
+                                <div class="media-body">
+                                    <h6>{{ post.subject }}</h6>
+                                    <span class="font-weight-bold">{{ post.datetime }}</span>
                                 </div>
-                            {% else %}
-                                {{ form.changesubject(class="form-control form-control-lg") }}
-                            {% endif %}
+                            </div>
+                            <button type="button" data-toggle="modal" data-target="#{{ post.datetime }}" class="btn btn-outline-info btn-sm ml-auto mr-2 align-self-center">Edit</button>
                         </div>
-                    </fieldset>
-                </form>
+                        
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- end of display post -->
             </div>
         </div>
-        
+        <!-- edit post modal -->
+        {% for post in userPost%}
+            <div class="modal fade" id="{{ post.datetime }}" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5>Edit Post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" enctype=multipart/form-data>
+                                {{ updatePostForm.hidden_tag() }}
+                                <fieldset class="form-group">
+                                    <div class="form-group">
+                                        {{ updatePostForm.subject.label(class="form-control-label") }}
+                                        {% if updatePostForm.subject.errors %}
+                                            {{ updatePostForm.subject(class="form-control is-invalid", value=post.subject) }}
+                                            <div class="invalid-feedback">
+                                                {% for error in updatePostForm.subject.errors %}    
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ updatePostForm.subject(class="form-control", value=post.subject) }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        {% set f = updatePostForm.messageArea.process_data(post.postMessage) %}
+                                        {{ updatePostForm.messageArea.label(class="form-control-label") }}
+                                        {% if updatePostForm.messageArea.errors %}
+                                            {{ updatePostForm.messageArea(rows="3", class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in updatePostForm.messageArea.errors %}   
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ updatePostForm.messageArea(rows="3", class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="input-group">
+                                        {% if updatePostForm.uploadImage.errors %}
+                                            {{ updatePostForm.uploadImage(class="is-invalid custom-file-input", id="inputGroupFile01") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in messageForm.uploadImage.errors %}    
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ updatePostForm.uploadImage(class="custom-file-input", id="inputGroupFile01") }}
+                                        {% endif %}
+                                        {{ updatePostForm.uploadImage.label(class="custom-file-label", id="inputGroupFile01")}}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ updatePostForm.olddatetime(value=post.datetime, type="hidden")}}
+                                    </div>
+                                </fieldset>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    {{ updatePostForm.messageSubmit(class="btn btn-custom") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
+    
 {% endblock content %}

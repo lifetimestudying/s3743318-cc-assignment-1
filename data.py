@@ -120,20 +120,34 @@ def getUserPost(userID):
 
     results = list(query.fetch())
 
-    if len(results) > 10:
-        return results[:10] 
-
     return results
 
 
+def updatePassword(userID, password):
+    query = datastore_client.query(kind="user")
+    query.add_filter("userID", "=", userID)
+
+    data = query.fetch()
+
+    for value in data:
+        value['password'] = password
+        datastore_client.put(value)
 
 
+def updatePost(userID, subject, postMessage, olddatetime, datetime, image):
+    query = datastore_client.query(kind="post")
+    query.add_filter("userID", "=", userID)
+    query.add_filter("datetime", "=", olddatetime)
 
+    data = query.fetch()
 
+    for value in data:
+        value['postMessage'] = postMessage
+        value['subject'] = subject
+        value['datetime'] = datetime
 
-
-
-
+        datastore_client.put(value)
+         
 
 
 

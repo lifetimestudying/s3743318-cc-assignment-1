@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, session, send_file
-from forms import LoginForm, RegistrationForm, MessageForm, AccountForm
+from forms import LoginForm, RegistrationForm, MessageForm, AccountForm, UpdatePostForm
 from werkzeug.utils import secure_filename
-from data import validateUser, storeUser, checkUserID, checkUsername, getUserImage, getPostImage, storePost, getUserPost
+from data import validateUser, storeUser, checkUserID, checkUsername, getUserImage, getPostImage, storePost, getUserPost, updatePassword, updatePost
 import datetime
 
 app = Flask(__name__)
@@ -87,17 +87,19 @@ def forum():
         userImage = getUserImage(user)
         # retrieve user post by current session user
         userPost = getUserPost(user)
+        if len(getUserPost(user)) > 10:
+            userPost = userPost[:10]    
 
         messageForm = MessageForm()
-        subject = messageForm.subject.data
-        message = messageForm.messageArea.data
-        image = messageForm.uploadImage.data
         
         # check if post valid and store to datastore and image to storage
         if messageForm.validate_on_submit():
             # initial datetime
             dt = datetime.datetime.now()
             dt_format = dt.strftime("%d-%m-%Y %T")
+            subject = messageForm.subject.data
+            message = messageForm.messageArea.data
+            image = messageForm.uploadImage.data
 
             storePost(user, subject, message, dt_format, image)
             return redirect(url_for('forum'))
@@ -114,8 +116,42 @@ def account():
     if "user" in session:
         # identify current session user
         user = session["user"]
+        userImage = getUserImage(user)
+        userPost = getUserPost(user)
+
         accountForm = AccountForm() 
-        return render_template('account.html', title="Account", form=accountForm, user=user)
+        updatePostForm = UpdatePostForm() 
+
+        # message form submition 
+        if updatePostForm.validate_on_submit():
+            # initial datetime
+            dt = datetime.datetime.now()
+            dt_format = dt.strftime("%d-%m-%Y %T")
+            subject = updatePostForm.subject.data
+            message = updatePostForm.messageArea.data
+            image = updatePostForm.uploadImage.data 
+            olddatetime = updatePostForm.olddatetime.data
+
+            print('Message: ' + message)
+            print('Old Time: ' + olddatetime)
+            updatePost(user, subject, message, olddatetime, dt_format, image)
+            return redirect(url_for('account'))
+        # account form submition
+        # if accountForm.validate_on_submit():
+        #     oldpassword = accountForm.oldpassword.data
+
+        #     # check if old password match password in datastore
+        #     if validateUser(user, oldpassword):
+        #         newpassword = accountForm.newpassword.data 
+        #         updatePassword(user, newpassword)
+        #         flash(f'Password changed successful.', 'success')
+        #         return redirect(url_for('account'))
+        #     else:
+        #         flash(f'Incorrect old password.', 'danger')
+        #         return redirect(url_for('account'))
+
+        return render_template('account.html', title="Account", updatePostForm=updatePostForm, accountform=accountForm,
+            user=user, userPost=userPost, userImage=userImage)
     else:
         flash(f"You haven't logged in yet.", 'danger')
         return redirect(url_for('login'))
