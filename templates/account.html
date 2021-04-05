@@ -72,7 +72,7 @@
                                     <span class="font-weight-bold">{{ post.datetime }}</span>
                                 </div>
                             </div>
-                            <button type="button" data-toggle="modal" data-target="#{{ post.datetime }}" class="btn btn-outline-info btn-sm ml-auto mr-2 align-self-center">Edit</button>
+                            <button type="button" data-toggle="modal" data-target="#{{ post.key }}" class="btn btn-outline-info btn-sm ml-auto mr-2 align-self-center">Edit</button>
                         </div>
                         
                     </div>
@@ -83,7 +83,7 @@
         </div>
         <!-- edit post modal -->
         {% for post in userPost%}
-            <div class="modal fade" id="{{ post.datetime }}" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="{{ post.key }}" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -137,7 +137,8 @@
                                         {{ updatePostForm.uploadImage.label(class="custom-file-label", id="inputGroupFile01")}}
                                     </div>
                                     <div class="form-group">
-                                        {{ updatePostForm.olddatetime(value=post.datetime, type="hidden")}}
+                                        {{ updatePostForm.postID(value=post.key.id, type="hidden")}}
+                                        {{ updatePostForm.hasImage(value=post.hasImage, type="hidden")}}
                                     </div>
                                 </fieldset>
                                 <div class="form-group">

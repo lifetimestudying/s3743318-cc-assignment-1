@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, session, send_file
 from forms import LoginForm, RegistrationForm, MessageForm, AccountForm, UpdatePostForm
 from werkzeug.utils import secure_filename
-from data import validateUser, storeUser, checkUserID, checkUsername, getUserImage, getPostImage, storePost, getUserPost, updatePassword, updatePost
+from data import *
 import datetime
 
 app = Flask(__name__)
@@ -87,6 +87,15 @@ def forum():
         userImage = getUserImage(user)
         # retrieve user post by current session user
         userPost = getUserPost(user)
+        # retrieve user name
+        userName = getUsername(user)
+
+        # add post image url to post list
+        for post in userPost:
+            if post['hasImage'] == True:
+                postImage = getPostImage(post.key.id)
+                post["postImage"] = postImage 
+
         if len(getUserPost(user)) > 10:
             userPost = userPost[:10]    
 
@@ -100,12 +109,25 @@ def forum():
             subject = messageForm.subject.data
             message = messageForm.messageArea.data
             image = messageForm.uploadImage.data
+            hasImage = False # default value of has image
 
-            storePost(user, subject, message, dt_format, image)
+            # store user data into datastore
+            storePost(user, subject, message, dt_format, hasImage)
+            # retrieve post ID just been stored
+            postID = getUserPostID(user, dt_format)
+            postID = int(postID)
+            # upload image into storage and references postID
+            if image:
+                # change has image value to true if found image files
+                hasImage = True
+                updateHasImage(postID, hasImage)
+                # upload to storage
+                uploadPostImage(postID, image)
+
             return redirect(url_for('forum'))
 
         return render_template('forum.html', title='forum', 
-            form=messageForm, user=user, userImage=userImage, userPost=userPost)
+            form=messageForm, user=user, userName=userName, userImage=userImage, userPost=userPost)
     else:
         flash(f"You haven't logged in yet.", 'danger')
         return redirect(url_for('login'))
@@ -123,32 +145,43 @@ def account():
         updatePostForm = UpdatePostForm() 
 
         # message form submition 
-        if updatePostForm.validate_on_submit():
+        if updatePostForm.messageSubmit.data and updatePostForm.validate():
             # initial datetime
             dt = datetime.datetime.now()
             dt_format = dt.strftime("%d-%m-%Y %T")
+            postID = updatePostForm.postID.data
+            postID = int(postID)
             subject = updatePostForm.subject.data
             message = updatePostForm.messageArea.data
             image = updatePostForm.uploadImage.data 
-            olddatetime = updatePostForm.olddatetime.data
+            hasImage = updatePostForm.hasImage.data
 
-            print('Message: ' + message)
-            print('Old Time: ' + olddatetime)
-            updatePost(user, subject, message, olddatetime, dt_format, image)
+            # update post
+            updatePost(postID, subject, message, dt_format)
+
+            # upload image into storage and references postID
+            if image:
+                # change has image value to true if found image files
+                hasImage = True
+                updateHasImage(postID, hasImage)
+                # upload to storage
+                uploadPostImage(postID, image)
+            flash(f'Update Successful.', 'success')
             return redirect(url_for('account'))
-        # account form submition
-        # if accountForm.validate_on_submit():
-        #     oldpassword = accountForm.oldpassword.data
 
-        #     # check if old password match password in datastore
-        #     if validateUser(user, oldpassword):
-        #         newpassword = accountForm.newpassword.data 
-        #         updatePassword(user, newpassword)
-        #         flash(f'Password changed successful.', 'success')
-        #         return redirect(url_for('account'))
-        #     else:
-        #         flash(f'Incorrect old password.', 'danger')
-        #         return redirect(url_for('account'))
+        # account form submition
+        if accountForm.accountSubmit.data and accountForm.validate():
+            oldpassword = accountForm.oldpassword.data
+
+            # check if old password match password in datastore
+            if validateUser(user, oldpassword):
+                newpassword = accountForm.newpassword.data 
+                updatePassword(user, newpassword)
+                flash(f'Password changed successful.', 'success')
+                return redirect(url_for('account'))
+            else:
+                flash(f'Incorrect old password.', 'danger')
+                return redirect(url_for('account'))
 
         return render_template('account.html', title="Account", updatePostForm=updatePostForm, accountform=accountForm,
             user=user, userPost=userPost, userImage=userImage)

@@ -95,14 +95,24 @@ nav {
     overflow-y: scroll;
 }
 
-.user-post-image {
+.user-image {
     height: 40px;
     width: 40px;
 }
 
-.user-post-image img {
+.user-image img {
     height: 100%;
     width: 100%; 
+}
+
+.post-image {
+    /* height: auto; */
+    width: 120px;
+}
+
+.post-image img {
+    height: 100%;
+    width: 100%;
 }
 
 /* user.html */

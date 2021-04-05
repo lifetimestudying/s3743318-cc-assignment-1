@@ -77,16 +77,24 @@
                 <div class="card mb-2">
                     <div class="card-body">
                         <div class="media">
-                            <div class="user-post-image mr-3">
+                            <div class="user-image mr-3">
                                 <img class="rounded-circle" src="{{ userImage }}">
                             </div>
                             <div class="media-body">
+                                <h5 class="border-bottom">{{ userName }}</h5>
                                 <h6>{{ post.subject }}</h6>
                                 <p class="text-justify">{{ post.postMessage }}</p>
                                 <span class="font-weight-bold">{{ post.datetime }}</span>
                             </div>
-                        </div>
-                        
+                            <div class="post-image ml-auto">
+                                {% if post.hasImage == False %}
+                                    <img class="img-thumbnail" src="../static/img/not-found.png">
+                                {% else %}
+                                    <img class="img-thumbnail" src="{{ post.postImage }}">
+                                {% endif %}
+                            </div>
+                                
+                        </div> 
                     </div>
                 </div>
                 {% endfor %}

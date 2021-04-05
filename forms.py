@@ -29,8 +29,9 @@ class AccountForm(FlaskForm):
     accountSubmit = SubmitField('Change')
 
 class UpdatePostForm(FlaskForm):
+    postID = StringField('PostID')
     subject = StringField('Subject', validators=[DataRequired()], render_kw={"placeholder": "Subject"})
     messageArea = TextAreaField('Message', validators=[DataRequired()])
     uploadImage = FileField('Choose file')
-    olddatetime = StringField('Old datetime')
+    hasImage = BooleanField('Has image')
     messageSubmit = SubmitField('Post')
